@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Application</title>
+    <link rel="icon" href="data:image/png;base64,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" alt="" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #92D293;
+        }
+        .timer-menu-container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .color-input-container {
+            width: 40px; /* Adjust as needed */
+        }
+
+        .color-input-container input {
+            width: 100%;
+            padding: 0;
+            height: 38px; /* Align with the height of the number input */
+        }
+
+        .timer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-load-btn {
+            flex-grow: 1;
+        }
+
+        .bi {
+            vertical-align: 0.125em;
+        }
+    </style>
+</head>
+<body class="text-white" style="height: 95vh">
+    <div id="timerMenu">
+        <div class="timer-menu-container bg-dark border border-3 border-light rounded my-5 p-4">
+            <div id="timerCreateMenu" class="mb-3">
+                <h2>Create Timer</h2>
+                <div class="mb-3">
+                    <label for="timerTitle" class="form-label">Timer Title</label>
+                    <input type="text" id="timerTitle" class="form-control" placeholder="Enter Timer Title">
+                </div>
+                <label class="form-label">Timer Segments</label>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button onclick="addSegment()" class="btn btn-light">
+                    <i class="bi bi-plus"></i> Add Segment
+                </button>
+                <button onclick="createTimer()" class="btn btn-success">
+                    <i class="bi bi-clock"></i> Create Timer
+                </button>
+            </div>
+        </div>
+        <div class="timer-menu-container bg-dark border border-3 border-light rounded my-5 p-4">
+            <h2 class="mb-3">My Timers</h2>
+            <div id="savedTimers" class="d-grid gap-2">
+
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button onclick="exportTimers()" class="btn btn-primary">
+                    <i class="bi bi-file-earmark-arrow-up"></i> Export Timers
+                </button>
+                <div>
+                    <button onclick="document.getElementById('importFile').click()" class="btn btn-primary">
+                        <i class="bi bi-file-earmark-arrow-down"></i> Import Timers
+                    </button>
+                    <input type="file" id="importFile" style="display: none;" onchange="importTimers(event)" accept=".json">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="timerDisplay"  style="display: none;">
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <div id="digitalTimer" class="display-2 fw-semibold text-center text-black">0:00</div>
+                </div>
+            </div>
+        </div>
+
+        <div onclick="pauseTimer()" class="flex-grow-1 d-flex justify-content-center align-items-center" style="height: 77vh">
+            <canvas id="pieChart" width="1000" height="1000" style="width: min(70vh, 70vw); height: min(70vh, 70vw)"></canvas>
+        </div>
+
+        <div class="container mb-3 fixed-bottom">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <button onclick="pauseTimer()" class="btn btn-success me-2" id="pauseButton">
+                        <i class="bi bi-pause-fill"></i> Pause
+                    </button>
+                    <button onclick="resetTimer()" class="btn btn-danger me-2">
+                        <i class="bi bi-arrow-clockwise"></i> Restart
+                    </button>
+                    <button onclick="changeTimer()" class="btn btn-info">
+                        <i class="bi bi-pencil-square"></i> Change Timer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="accurate_interval.js"></script>
+    <script src="timer.js"></script>
+    <script src="nosleep.js"></script>
+    <script>
+        var noSleep = new NoSleep();
+        document.addEventListener('click', function enableNoSleep() {
+            document.removeEventListener('click', enableNoSleep, false);
+            noSleep.enable();
+        }, false);
+        window.onload = function() {
+            loadSavedTimers();
+            document.querySelector('[type="color"]').value = generateRandomHexColor()
+            window.addEventListener('keydown', e => {
+                if (event.key === " " || event.key === "Spacebar") {
+                    event.preventDefault();
+                    if (timer) pauseTimer();
+                }
+
+            });
+        };
+        let timer;
+
+        function addSegment() {
+            const timerCreateMenu = document.getElementById('timerCreateMenu');
+            const newSegment = document.createElement('div');
+            newSegment.className = 'd-flex align-items-center timer-segment mb-2';
+            newSegment.innerHTML = `
+                <input type="text" name="length" min="1" placeholder="Length in minutes" class="form-control me-2">
+                <input type="text" name="desc" min="1" max="10" placeholder="Short Description" class="form-control me-2">
+                <div class="color-input-container">
+                    <input type="color" class="form-control form-control-color" style="min-width: 2.5em" value="`+generateRandomHexColor()+`">
+                </div>
+            `;
+            timerCreateMenu.appendChild(newSegment);
+        }
+        addSegment()
+
+        function createTimer() {
+            const segments = document.querySelectorAll('.timer-segment');
+            const timerData = [];
+            segments.forEach(segment => {
+                console.log(segment)
+                const durationValue = segment.querySelector('[name="length"]').value;
+                const descValue = segment.querySelector('[name="desc"]').value;
+                if (durationValue.trim() == "") {
+                    return
+                }
+                let duration = parseFloat(durationValue.replace(",", "."));
+                if (durationValue.indexOf(":") != -1) {
+                    let splitDuration = durationValue.split(":")
+                    duration = parseFloat(splitDuration[0]) + parseFloat(splitDuration[1])/60
+                }
+                if (!duration) {
+                    alert('Please enter a number for the duration of the segment.');
+                    throw "failed";
+                }
+                timerData.push({
+                    duration: duration,
+                    desc: descValue,
+                    color: segment.querySelector('[type="color"]').value
+                });
+            });
+            if (!timerData.length) {
+                alert('Please set the duration of at least one segment.');
+                throw "failed";
+            }
+            const title = document.getElementById('timerTitle').value.trim();
+            if (!title) {
+                alert('Please enter a title for the timer.');
+                return;
+            }
+            saveTimer({ title, data: timerData });
+            loadSavedTimers();
+            resetCreateTimerMenu();
+        }
+
+        function resetCreateTimerMenu() {
+            // Reset the timer title
+            document.getElementById('timerTitle').value = '';
+
+            // Reset timer segment lengths to default (empty)
+            const lengthInputs = document.querySelectorAll('#timerMenu .timer-segment [type="text"]');
+            lengthInputs.forEach(input => input.value = '');
+
+            // Reset timer segment colors to default (first color option)
+            const colorInputs = document.querySelectorAll('#timerMenu .timer-segment [type="color"]');
+            colorInputs.forEach(input => input.value = generateRandomHexColor()); // Set to default color, e.g., black
+
+            const createMenu = document.getElementById('timerCreateMenu');
+            while (createMenu.children.length > 4) {
+                createMenu.removeChild(createMenu.lastChild);
+            }
+        }
+
+
+        function pauseTimer() {
+            const pauseButton = document.getElementById('pauseButton');
+            if (timer) {
+                if (timer.isRunning) {
+                    timer.pause();
+                    drawPauseButton(true)
+                } else {
+                    timer.start();
+                    drawPauseButton(false)
+                }
+            }
+        }
+
+        function loadTimer(timerData) {
+            timer = new Timer(timerData, updatePieChart, drawPauseButton);
+            timer.redraw()
+            drawPauseSymbol();
+
+            drawPauseButton(true);
+
+            document.getElementById('timerMenu').style.display = 'none';
+            document.getElementById('timerDisplay').style.display = 'block';
+        }
+
+        function changeTimer() {
+            timer.reset();
+            document.getElementById('timerMenu').style.display = 'block';
+            document.getElementById('timerDisplay').style.display = 'none';
+        }
+
+        function drawPauseButton(running) {
+            const pauseButton = document.getElementById('pauseButton');
+            if (running) {
+                pauseButton.innerHTML = '<i class="bi bi-caret-right-fill"></i>  Start'
+                pauseButton.classList.remove("btn-warning")
+                pauseButton.classList.add("btn-success")
+            } else {
+                pauseButton.innerHTML = '<i class="bi bi-pause-fill"></i>  Pause'
+                pauseButton.classList.remove("btn-success")
+                pauseButton.classList.add("btn-warning")
+            }
+        }
+
+        function resetTimer() {
+            if (timer) {
+                timer.reset();
+                timer.redraw()
+                drawPauseSymbol();
+            }
+        }
+
+        function updatePieChart(segmentRatios) {
+            const colors = timer.segments.map(seg => seg.color);
+            const descs = timer.segments.map(seg => seg.desc);
+            drawPieChart('pieChart', segmentRatios, timer.getFullSegmentRatios(), colors, timer.currentSegmentIndex, descs);
+        }
+        function generateRandomHexColor() {
+            let randomColor = Math.floor(Math.random() * 0xFFFFFF).toString(16);
+            return '#' + randomColor.padStart(6, '0');
+        }
+
+        function exportTimers() {
+            const savedTimers = JSON.stringify(getSavedTimers());
+            const blob = new Blob([savedTimers], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'timers.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importTimers(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(event) {
+                try {
+                    const newTimers = JSON.parse(event.target.result);
+                    const timers = [...getSavedTimers(), ...newTimers];
+                    localStorage.setItem("savedTimers", JSON.stringify(timers));
+                    loadSavedTimers();
+                } catch (e) {
+                    alert('Failed to import timers: ' + e.message);
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+
+    </script>
+</body>
+</html>
