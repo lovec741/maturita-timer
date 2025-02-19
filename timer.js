@@ -1,64 +1,52 @@
-var perfectTimer = {                                                              // Set of functions designed to create nearly perfect timers that do not drift
-    timers: {},                                                                     // An object of timers by ID
-  nextID: 0,                                                                      // Next available timer reference ID
-  set: (callback, interval) => {                                                  // Set a timer
-    var expected = Date.now() + interval;                                         // Expected currect time when timeout fires
-    var ID = perfectTimer.nextID++;                                               // Create reference to timer
-    function step() {                                                             // Adjusts the timeout to account for any drift since last timeout
-      callback();                                                                 // Call the callback
-      var dt = Date.now() - expected;                                             // The drift (ms) (positive for overshooting) comparing the expected time to the current time
-      expected += interval;                                                       // Set the next expected currect time when timeout fires
-      perfectTimer.timers[ID] = setTimeout(step, Math.max(0, interval - dt));     // Take into account drift
-    }
-    perfectTimer.timers[ID] = setTimeout(step, interval);                         // Return reference to timer
-    return ID;
-  },
-  clear: (ID) => {                                                                // Clear & delete a timer by ID reference
-    if (perfectTimer.timers[ID] != undefined) {                                   // Preventing errors when trying to clear a timer that no longer exists
-      console.log('clear timer:', ID);
-      console.log('timers before:', perfectTimer.timers);
-      for (const [key, value] of Object.entries(perfectTimer.timers)) {
-        clearTimeout(value);
-      }
-      perfectTimer.timers = {};
-      console.log('timers after:', perfectTimer.timers);
-    }
-    }       
-}
-
 class Timer {
-    constructor(segments, updateCallback, drawButtonCallback) {
+    constructor(segments) {
         this.segments = segments.map(seg => ({
             ...seg,
-            duration: Math.round(parseFloat(seg.duration.toString().replace(",", ".")) * 60), // Convert minutes to seconds
+            duration: Math.round(parseFloat(seg.duration.toString().replace(",", ".")) * 60),
             elapsed: 0,
         }));
         this.totalTime = this.segments.reduce((total, seg) => total + seg.duration, 0);
         this.currentSegmentIndex = 0;
         this.isRunning = false;
         this.timerInterval = null;
-        this.updateCallback = updateCallback;
-        this.drawButtonCallback = drawButtonCallback;
+        this.timerDraw = new TimerDraw('pieChart');
+        this.pauseButton = document.getElementById('pauseButton');
+        this.timerClock = document.getElementById('timerClock');
+        this.finishedModal = new bootstrap.Modal(document.getElementById('timerFinishedModal'));
+
+        this.redraw();
+        this.updatePauseButton(false);
+        this.timerDraw.drawPauseSymbol();
     }
 
-    start() {
-        if (this.isRunning) return;
-        this.isRunning = true;
-        this.startTime = Date.now();
-        this.update()
-        if (this.timerInterval !== null)
-            perfectTimer.clear(this.timerInterval)
-        console.log("creating timer")
-        this.timerInterval = perfectTimer.set(() => {this.update()}, 1000);
+    toggle() {
+        if (!this.isRunning) {
+            this.updatePauseButton(true);
+            this.isRunning = true;
+            this.startTime = Date.now();
+            this.update()
+            if (this.timerInterval !== null)
+                accurateInterval.clear(this.timerInterval)
+            // console.log("creating timer")
+            this.timerInterval = accurateInterval.set(() => {this.update()}, 1000);
+        } else {
+            this.updatePauseButton(false);
+            this.timerDraw.drawPauseSymbol();
+            accurateInterval.clear(this.timerInterval);
+            this.isRunning = false;
+            const currentSegment = this.segments[this.currentSegmentIndex];
+            if (currentSegment != undefined && currentSegment.elapsed !== 0) { // prevents second skip on pause
+                currentSegment.elapsed--;
+            }
+        }
     }
 
     update() {
         if (!this.isRunning) return;
-        console.log(Date.now() - this.startTime)
+        // console.log("TIMER DEBUG", Date.now() - this.startTime)
         if (this.currentSegmentIndex >= this.segments.length) {
-            this.redraw()
             this.reset();
-            this.drawButtonCallback(true);
+            this.finishedModal.show();
             return;
         }
 
@@ -82,28 +70,43 @@ class Timer {
         const seconds = remainingTime % 60;
         const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-        document.getElementById('digitalTimer').innerText = formattedTime;
+        this.timerClock.innerText = formattedTime;
+    }
+
+    updatePauseButton(running) {
+        if (!running) {
+            this.pauseButton.innerHTML = '<i class="bi bi-caret-right-fill"></i>  Start'
+            this.pauseButton.classList.remove("btn-warning")
+            this.pauseButton.classList.add("btn-success")
+        } else {
+            this.pauseButton.innerHTML = '<i class="bi bi-pause-fill"></i>  Pause'
+            this.pauseButton.classList.remove("btn-success")
+            this.pauseButton.classList.add("btn-warning")
+        }
     }
 
     redraw() {
-        this.updateCallback(this.getSegmentRatios());
+        this.timerDraw.drawPieChart(
+            this.getElapsedSegmentRatios(),
+            this.getSegmentRatios(),
+            this.segments.map(seg => seg.color),
+            this.currentSegmentIndex,
+            this.segments.map(seg => seg.desc)
+        );
         this.updateDigitalTimerDisplay();
     }
 
-    pause() {
-        drawPauseSymbol();
-        perfectTimer.clear(this.timerInterval);
-        this.isRunning = false;
-    }
-
     reset() {
-        perfectTimer.clear(this.timerInterval);
+        accurateInterval.clear(this.timerInterval);
         this.isRunning = false;
         this.segments.forEach(seg => seg.elapsed = 0);
         this.currentSegmentIndex = 0;
+        this.redraw();
+        this.updatePauseButton(false);
+        this.timerDraw.drawPauseSymbol();
     }
 
-    getSegmentRatios() {
+    getElapsedSegmentRatios() {
         let ratios = [];
         for (let i = 0; i < this.segments.length; i++) {
             const segment = this.segments[i];
@@ -117,7 +120,8 @@ class Timer {
         }
         return ratios
     }
-    getFullSegmentRatios() {
+
+    getSegmentRatios() {
         let ratios = [];
         for (let i = 0; i < this.segments.length; i++) {
             const segment = this.segments[i];
@@ -127,203 +131,187 @@ class Timer {
     }
 }
 
-function drawPieSegment(ctx, centerX, centerY, radius, startAngle, endAngle, color, outlineColor, transparency) {
-    // Set styles and draw the segment
-    ctx.lineJoin = 'round';
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.arc(centerX, centerY, radius, startAngle - Math.PI/2, endAngle - Math.PI/2);
-    ctx.closePath();
-    if (transparency) {
-        ctx.globalAlpha = transparency;
+class TimerDraw {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.centerX = this.canvas.width / 2;
+        this.centerY = this.canvas.height / 2;
+        this.radius = Math.min(this.centerX, this.centerY) - 20;
     }
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    if (outlineColor != undefined) {
-        ctx.lineWidth = 10;
-        ctx.strokeStyle = outlineColor;
-        ctx.stroke();
+
+    drawPauseSymbol() {
+        const barWidth = 100;
+        const barGap = 80;
+        const pauseHeight = 300;
+
+        // first bar
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.fillRect(this.centerX - barWidth - barGap / 2, this.centerY - pauseHeight / 2, barWidth, pauseHeight);
+
+        // second bar
+        this.ctx.fillRect(this.centerX + barGap / 2, this.centerY - pauseHeight / 2, barWidth, pauseHeight);
     }
-}
-
-function drawPieSegmentDesc(ctx, description, centerX, centerY, radius, startAngle, endAngle) {
-    if (description == undefined) return;
-    // Calculate the middle angle of the segment
-    const midAngle = (startAngle + endAngle) / 2;
-
-    // Calculate the position for the text
-    const textX = centerX + (radius / 2) * Math.cos(midAngle - Math.PI/2);
-    const textY = centerY + (radius / 2) * Math.sin(midAngle - Math.PI/2);
-    
-    ctx.font = 'bold 50px Arial'; // You can change the font as needed
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.stroke
-
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 8; // Width of the outline
-    ctx.strokeText(description, textX, textY);
-    
-    // Draw the text fill
-    ctx.fillStyle = 'black'; // You can change the color as needed
-    ctx.fillText(description, textX, textY);
-
-    // const textMetrics = ctx.measureText(description);
-    // const textWidth = textMetrics.width;
-    // const textHeight = 30; // Approximate height based on font size
-
-    // // Draw a white rectangle behind the text
-    // ctx.fillStyle = 'white';
-    // ctx.fillRect(textX - textWidth / 2 - 5, textY - textHeight / 2 - 10, textWidth + 10, textHeight + 15);
-
-    // // Draw the description text
-    // ctx.fillStyle = 'black'; // You can change the color as needed
-    // ctx.fillText(description, textX, textY);
-}
 
 
-function drawPieChart(canvasId, segmentRatios, fullSegmentRatios, colors, currentSegmentIndex, descs) {
-    const canvas = document.getElementById(canvasId);
-    const ctx = canvas.getContext('2d');
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = Math.min(centerX, centerY) - 20;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    let currentAngles = [null, null];
-    // Draw all segments in a lighter color
-    let startAngle = 0;
-    fullSegmentRatios.forEach((ratio, index) => {
-        const endAngle = startAngle + 2 * Math.PI * ratio;
-        if (index == currentSegmentIndex) {
-            currentAngles = [startAngle, endAngle];
-        } else {
-            drawPieSegment(ctx, centerX, centerY, radius, startAngle, endAngle, colors[index]);
+    drawPieSegment(startAngle, endAngle, color, outlineColor, transparency) {
+        this.ctx.lineJoin = 'round';
+        this.ctx.fillStyle = color;
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.centerX, this.centerY);
+        this.ctx.arc(this.centerX, this.centerY, this.radius, startAngle - Math.PI/2, endAngle - Math.PI/2);
+        this.ctx.closePath();
+        if (transparency) {
+            this.ctx.globalAlpha = transparency;
         }
-        startAngle = endAngle;
-    });
-    drawPieSegment(ctx, centerX, centerY, radius, currentAngles[0], currentAngles[1], colors[currentSegmentIndex], "black");
-
-
-    let currentAnglesElapsed = [null, null];
-
-    // Draw elapsed time segments in their original colors
-    startAngle = 0;
-    segmentRatios.forEach((ratio, index) => {
-        const endAngle = startAngle + 2 * Math.PI * ratio;
-        if (index == currentSegmentIndex) {
-            currentAnglesElapsed = [startAngle, endAngle];
-        } else {
-            drawPieSegment(ctx, centerX, centerY, radius, startAngle, endAngle, "#fff", undefined, 0.4+ratio/fullSegmentRatios[index]/2);
+        this.ctx.fill();
+        this.ctx.globalAlpha = 1;
+        if (outlineColor != null) {
+            this.ctx.lineWidth = 10;
+            this.ctx.strokeStyle = outlineColor;
+            this.ctx.stroke();
         }
-        startAngle = endAngle;
-    });
-    drawPieSegment(ctx, centerX, centerY, radius, currentAnglesElapsed[0], currentAnglesElapsed[1], "#fff", "black", 0.4+segmentRatios[currentSegmentIndex]/fullSegmentRatios[currentSegmentIndex]/2);
+    }
 
-    currentAngles = [null, null];
-    // Draw all segments descriptions
-    startAngle = 0;
-    fullSegmentRatios.forEach((ratio, index) => {
-        const endAngle = startAngle + 2 * Math.PI * ratio;
-        if (index == currentSegmentIndex) {
-            currentAngles = [startAngle, endAngle];
-        } else {
-            drawPieSegmentDesc(ctx, descs[index], centerX, centerY, radius, startAngle, endAngle);
-        }
-        startAngle = endAngle;
-    });
-    drawPieSegmentDesc(ctx, descs[currentSegmentIndex], centerX, centerY, radius, currentAngles[0], currentAngles[1]);
+    drawPieSegmentDesc(description, startAngle, endAngle) {
+        if (description == null) return;
+        const midAngle = (startAngle + endAngle) / 2;
 
-}
+        const textX = this.centerX + (this.radius / 2) * Math.cos(midAngle - Math.PI/2);
+        const textY = this.centerY + (this.radius / 2) * Math.sin(midAngle - Math.PI/2);
+        
+        this.ctx.font = 'bold 50px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.stroke
 
-function lightenColor(color, percent) {
-    // Parse the color and increase its lightness by the given percent
-    let {r, g, b} = hexToRgb(color);
-    r = Math.round(r * percent + 255 * (1 - percent));
-    g = Math.round(g * percent + 255 * (1 - percent));
-    b = Math.round(b * percent + 255 * (1 - percent));
-    return `rgb(${r}, ${g}, ${b})`;
-}
+        this.ctx.strokeStyle = 'white';
+        this.ctx.lineWidth = 8;
+        this.ctx.strokeText(description, textX, textY);
+        
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillText(description, textX, textY);
+    }
 
-function hexToRgb(hex) {
-    // Convert hex color to RGB
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
+    drawPieChart(elapsedSegmentRatios, segmentRatios, colors, currentSegmentIndex, descs) {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-function saveTimer(timer) {
-    const savedTimers = getSavedTimers();
-    savedTimers.push(timer);
-    localStorage.setItem("savedTimers", JSON.stringify(savedTimers));
-    // document.cookie = `savedTimers=${JSON.stringify(savedTimers)};path=/;expires=Tue, 19 Jan 2038 03:14:07 UTC;`;
-}
+        let currentAngles = [null, null];
 
-function loadSavedTimers() {
-    const savedTimers = getSavedTimers();
-    const savedTimersDiv = document.getElementById('savedTimers');
-    if (savedTimers.length) {
-        savedTimersDiv.innerHTML = '';
-        savedTimers.forEach((timer, index) => {
-            // Timer container with flex layout
-            const timerContainer = document.createElement('div');
-            timerContainer.className = 'timer-container';
-
-            // Create the load button with flex-grow
-            const loadButton = document.createElement('button');
-            loadButton.className = 'btn btn-secondary timer-load-btn';
-            loadButton.innerHTML = timer.title;
-            loadButton.onclick = () => loadTimer(timer.data);
-            timerContainer.appendChild(loadButton);
-
-            // Create the delete button
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'btn btn-danger';
-            deleteButton.innerHTML = '<i class="bi bi-trash"></i> Delete';
-            deleteButton.onclick = () => deleteTimer(index);
-            timerContainer.appendChild(deleteButton);
-
-            savedTimersDiv.appendChild(timerContainer);
+        // segments
+        let startAngle = 0;
+        segmentRatios.forEach((ratio, index) => {
+            const endAngle = startAngle + 2 * Math.PI * ratio;
+            this.drawPieSegment(startAngle, endAngle, colors[index]);
+            if (index == currentSegmentIndex) {
+                currentAngles = [startAngle, endAngle];
+            }
+            startAngle = endAngle;
         });
-    } else {
-        savedTimersDiv.innerHTML = '<span>No timers created!</span>'
+
+        let currentAnglesElapsed = [null, null];
+
+        // elapsed white overlays
+        startAngle = 0;
+        elapsedSegmentRatios.forEach((ratio, index) => {
+            const endAngle = startAngle + 2 * Math.PI * ratio;
+            this.drawPieSegment(startAngle, endAngle, "#fff", null, 0.8);
+            if (index == currentSegmentIndex) {
+                currentAnglesElapsed = [startAngle, endAngle];
+            }
+            startAngle = endAngle;
+        });
+
+        // outlines
+        this.drawPieSegment(currentAngles[0], currentAngles[1], "rgba(0,0,0,0)", "black");
+        // this.drawPieSegment(currentAnglesElapsed[0], currentAnglesElapsed[1],  "rgba(0,0,0,0)", "black");
+
+        // descriptions
+        startAngle = 0;
+        segmentRatios.forEach((ratio, index) => {
+            const endAngle = startAngle + 2 * Math.PI * ratio;
+            this.drawPieSegmentDesc(descs[index], startAngle, endAngle);
+            startAngle = endAngle;
+        });
+    }
+}
+
+class SavedTimers {
+    constructor (showTimerCallback) {
+        this.showTimerCallback = showTimerCallback
+        this.loadSavedTimers();
     }
 
+    loadSavedTimers() {
+        const storageTimers = JSON.parse(localStorage.getItem("savedTimers"));
+        this.savedTimers = storageTimers !== null ? storageTimers : []
+    }
+
+    saveTimers(...newTimers) {
+        this.savedTimers = [...this.savedTimers, ...newTimers]
+        localStorage.setItem("savedTimers", JSON.stringify(this.savedTimers));
+        this.drawSavedTimers();
+    }
+    
+    deleteTimer(index) {
+        this.savedTimers.splice(index, 1);
+        localStorage.setItem("savedTimers", JSON.stringify(this.savedTimers));
+        this.drawSavedTimers();
+    }
+    
+    exportTimers() {
+        const savedTimersJson = JSON.stringify(this.savedTimers);
+        const blob = new Blob([savedTimersJson], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'timers.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    
+    importTimers(event) {
+        const fileReader = new FileReader();
+        fileReader.onload = (function(event) {
+            try {
+                const newTimers = JSON.parse(event.target.result);
+                this.saveTimers(...newTimers);
+            } catch (e) {
+                alert('Failed to import timers: ' + e.message);
+            }
+        }).bind(this);
+        fileReader.readAsText(event.target.files[0]);
+    }
+
+    drawSavedTimers() {
+        const savedTimersDiv = document.getElementById('savedTimers');
+        if (this.savedTimers.length) {
+            savedTimersDiv.innerHTML = '';
+            this.savedTimers.forEach((timer, index) => {
+                const timerContainer = document.createElement('div');
+                timerContainer.className = 'timer-container';
+    
+                const loadButton = document.createElement('button');
+                loadButton.className = 'btn btn-secondary timer-load-btn';
+                loadButton.innerHTML = timer.title;
+                loadButton.onclick = (() => {
+                    this.showTimerCallback(timer.data);
+                }).bind(this);
+                timerContainer.appendChild(loadButton);
+    
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'btn btn-danger';
+                deleteButton.innerHTML = '<i class="bi bi-trash"></i> Delete';
+                deleteButton.onclick = (() => {
+                    this.deleteTimer(index);
+                }).bind(this);
+                timerContainer.appendChild(deleteButton);
+    
+                savedTimersDiv.appendChild(timerContainer);
+            });
+        } else {
+            savedTimersDiv.innerHTML = '<span class="text-white">No timers created!</span>'
+        }
+    }
 }
 
-function getSavedTimers() {
-    const storageTimers = JSON.parse(localStorage.getItem("savedTimers"));
-    return storageTimers !== null ? storageTimers : []
-    // const cookies = document.cookie.split('; ');
-    // const savedTimerCookie = cookies.find(row => row.startsWith('savedTimers'));
-    // return savedTimerCookie ? JSON.parse(savedTimerCookie.split('=')[1]) : [];
-}
-
-function deleteTimer(index) {
-    let savedTimers = getSavedTimers();
-    savedTimers.splice(index, 1); // Remove the timer at the specified index
-    localStorage.setItem("savedTimers", JSON.stringify(savedTimers));
-    // document.cookie = `savedTimers=${JSON.stringify(savedTimers)};path=/;expires=Tue, 19 Jan 2038 03:14:07 UTC;`; // Update the cookie
-    loadSavedTimers(); // Refresh the saved timers display
-}
-
-function drawPauseSymbol() {
-    const canvas = document.getElementById('pieChart');
-    const ctx = canvas.getContext('2d');
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const barWidth = 100; // Width of each bar in the pause symbol
-    const barGap = 80; // Gap between the two bars
-    const pauseHeight = 300; // Height of the pause symbol
-
-    // Draw first bar of the pause symbol
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; // Semi-transparent black
-    ctx.fillRect(centerX - barWidth - barGap / 2, centerY - pauseHeight / 2, barWidth, pauseHeight);
-
-    // Draw second bar of the pause symbol
-    ctx.fillRect(centerX + barGap / 2, centerY - pauseHeight / 2, barWidth, pauseHeight);
-}
