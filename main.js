@@ -2,15 +2,18 @@ class TimerManager {
     constructor() {
         this.createMenu = new CreateMenu(((segments) => this.showTimer(segments)).bind(this));
         this.timer;
+        this.timerOpen = false;
     }
     
     showTimer(segments) {
+        this.timerOpen = true;
         this.timer = new Timer(segments);
         document.getElementById('timerMenu').style.display = 'none';
         document.getElementById('timerDisplay').style.display = 'block';
     }
     
     showMenu() {
+        this.timerOpen = false;
         this.timer.reset();
         document.getElementById('timerMenu').style.display = 'block';
         document.getElementById('timerDisplay').style.display = 'none';
@@ -31,10 +34,10 @@ class CreateMenu {
         const existingHexColors = Array.from(colorInputs).map(inp => inp.value);
     
         newSegment.innerHTML = `
-            <input type="text" name="length" min="1" placeholder="Length in minutes" class="form-control me-2">
-            <input type="text" name="desc" min="1" max="10" placeholder="Short Description" class="form-control me-2">
+            <input type="text" name="length" min="1" placeholder="Length in minutes" class="form-control me-2"/>
+            <input type="text" name="desc" maxlength="12" placeholder="Short Label" class="form-control me-2"/>
             <div class="color-input-container">
-                <input type="color" class="form-control form-control-color" style="min-width: 2.5em" value="`+generateRandomHexColor(existingHexColors)+`">
+                <input type="color" class="form-control form-control-color" style="min-width: 2.5em" value="`+generateRandomHexColor(existingHexColors)+`"/>
             </div>
         `;
         segmentsContainer.appendChild(newSegment);
@@ -160,7 +163,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.addEventListener('keydown', e => {
     if (e.key === " " || e.key === "Spacebar") {
-        e.preventDefault();
-        if (timerManager.timer) timerManager.timer.toggle();
+        if (timerManager.timerOpen) {
+            e.preventDefault();
+            timerManager.timer.toggle();
+        }
     }
 });

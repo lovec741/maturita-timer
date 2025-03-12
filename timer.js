@@ -177,8 +177,8 @@ class TimerDraw {
         if (description == null) return;
         const midAngle = (startAngle + endAngle) / 2;
 
-        const textX = this.centerX + (this.radius / 2) * Math.cos(midAngle - Math.PI/2);
-        const textY = this.centerY + (this.radius / 2) * Math.sin(midAngle - Math.PI/2);
+        const textX = this.centerX + (this.radius / 1.7) * Math.cos(midAngle - Math.PI/2);
+        const textY = this.centerY + (this.radius / 1.7) * Math.sin(midAngle - Math.PI/2);
         
         this.ctx.font = 'bold 50px Arial';
         this.ctx.textAlign = 'center';
