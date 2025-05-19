@@ -42,6 +42,15 @@
         .bi {
             vertical-align: 0.125em;
         }
+         /* hide spinners */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
     <script src="libs/accurate_interval.js"></script>
     <script src="libs/colorconverter.min.js"></script>

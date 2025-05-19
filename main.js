@@ -34,7 +34,12 @@ class CreateMenu {
         const existingHexColors = Array.from(colorInputs).map(inp => inp.value);
     
         newSegment.innerHTML = `
-            <input type="text" name="length" min="1" placeholder="Length in minutes" class="form-control me-2"/>
+            <div class="input-group me-2">
+                <input type="number" name="minutes" min="0" placeholder="0" class="form-control" aria-label="Minutes"/>
+                <span class="input-group-text">min</span>
+                <input type="number" name="seconds" min="0" max="59" placeholder="00" class="form-control" aria-label="Seconds"/>
+                <span class="input-group-text">s</span>
+            </div>
             <input type="text" name="desc" maxlength="12" placeholder="Short Label" class="form-control me-2"/>
             <div class="color-input-container">
                 <input type="color" class="form-control form-control-color" style="min-width: 2.5em" value="`+generateRandomHexColor(existingHexColors)+`"/>
@@ -47,28 +52,23 @@ class CreateMenu {
         const segments = document.querySelectorAll('.timer-segment');
         const timerData = [];
         segments.forEach(segment => {
-            const durationValue = segment.querySelector('[name="length"]').value;
+            const durationMinutesValue = segment.querySelector('[name="minutes"]').value;
+            var durationSecondsValue = segment.querySelector('[name="seconds"]').value;
             const descValue = segment.querySelector('[name="desc"]').value;
-            if (durationValue.trim() == "") {
-                return
+            if (!durationMinutesValue) {
+                return;
             }
-            let duration = parseFloat(durationValue.replace(",", "."));
-            if (durationValue.indexOf(":") != -1) {
-                let splitDuration = durationValue.split(":")
-                duration = parseFloat(splitDuration[0]) + parseFloat(splitDuration[1])/60
-            }
-            if (!duration) {
-                alert('Please enter a number for the duration of the segment.');
-                throw "failed";
+            if (!durationSecondsValue) {
+                durationSecondsValue = 0;
             }
             timerData.push({
-                duration: duration,
+                duration: parseInt(durationMinutesValue) + parseInt(durationSecondsValue) / 60,
                 desc: descValue,
                 color: segment.querySelector('[type="color"]').value
             });
         });
         if (!timerData.length) {
-            alert('Please set the duration of at least one segment.');
+            alert('Please set the minutes duration of at least one segment.');
             throw "failed";
         }
         const title = document.getElementById('timerTitle').value.trim();

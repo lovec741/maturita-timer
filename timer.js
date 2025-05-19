@@ -2,7 +2,7 @@ class Timer {
     constructor(segments) {
         this.segments = segments.map(seg => ({
             ...seg,
-            duration: Math.round(parseFloat(seg.duration.toString().replace(",", ".")) * 60),
+            duration: Math.round(seg.duration * 60),
             elapsed: 0,
         }));
         this.totalTime = this.segments.reduce((total, seg) => total + seg.duration, 0);
