@@ -76,7 +76,7 @@
                     <i class="bi bi-plus align-middle"></i> <span class="align-middle">Add Segment</span>
                 </button>
                 <button onclick="timerManager.createMenu.createTimer()" class="btn btn-success">
-                    <i class="bi bi-clock align-middle"></i> <span class="align-middle">Create Timer</span>
+                    <i class="bi bi-save align-middle"></i> <span class="align-middle">Save Timer</span>
                 </button>
             </div>
         </div>
@@ -130,8 +130,8 @@
                         <i class="bi bi-skip-backward align-middle"></i> <span class="align-middle">Previous</span>
                     </button>
 
-                    <button onclick="timerManager.timer.offset(-60)" class="btn btn-secondary me-2">
-                        <i class="bi bi-rewind align-middle"></i> <span class="align-middle">60s</span>
+                    <button onclick="timerManager.timer.offset(-30)" class="btn btn-secondary me-2">
+                        <i class="bi bi-rewind align-middle"></i> <span class="align-middle">30s</span>
                     </button>
                     <button onclick="timerManager.timer.offset(-15)" class="btn btn-secondary me-2">
                         <i class="bi bi-rewind align-middle"></i> <span class="align-middle">15s</span>
@@ -139,11 +139,11 @@
                     <button onclick="timerManager.timer.offset(15)" class="btn btn-secondary me-2">
                         <span class="align-middle">15s</span> <i class="bi bi-fast-forward align-middle"></i>
                     </button>
-                    <button onclick="timerManager.timer.offset(60)" class="btn btn-secondary me-md-2">
-                        <span class="align-middle">60s</span> <i class="bi bi-fast-forward align-middle"></i>
+                    <button onclick="timerManager.timer.offset(30)" class="btn btn-secondary me-md-2">
+                        <span class="align-middle">30s</span> <i class="bi bi-fast-forward align-middle"></i>
                     </button>
                     <button onclick="timerManager.timer.offsetSegment(true)" class="btn btn-secondary d-md-inline d-none">
-                        <i class="bi bi-skip-forward align-middle"></i> <span class="align-middle">Next</span>
+                        <span class="align-middle">Next</span> <i class="bi bi-skip-forward align-middle"></i>
                     </button>
                 </div>
             </div>            

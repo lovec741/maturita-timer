@@ -297,8 +297,9 @@ class TimerDraw {
 }
 
 class SavedTimers {
-    constructor (showTimerCallback) {
+    constructor (showTimerCallback, fillFormFromSavedTimerCallback) {
         this.showTimerCallback = showTimerCallback
+        this.fillFormFromSavedTimerCallback = fillFormFromSavedTimerCallback
         this.loadSavedTimers();
     }
 
@@ -317,6 +318,12 @@ class SavedTimers {
         this.savedTimers.splice(index, 1);
         localStorage.setItem("savedTimers", JSON.stringify(this.savedTimers));
         this.drawSavedTimers();
+    }
+
+    editTimer(index) {
+        var savedTimer = this.savedTimers[index];
+        this.deleteTimer(index);
+        this.fillFormFromSavedTimerCallback(savedTimer);
     }
     
     exportTimers() {
@@ -358,7 +365,15 @@ class SavedTimers {
                     this.showTimerCallback(timer.data);
                 }).bind(this);
                 timerContainer.appendChild(loadButton);
-    
+                
+                const editButton = document.createElement('button');
+                editButton.className = 'btn btn-primary';
+                editButton.innerHTML = '<i class="bi bi-pencil align-middle"></i> <span class="align-middle">Edit</span>';
+                editButton.onclick = (() => {
+                    this.editTimer(index);
+                }).bind(this);
+                timerContainer.appendChild(editButton);
+
                 const deleteButton = document.createElement('button');
                 deleteButton.className = 'btn btn-danger';
                 deleteButton.innerHTML = '<i class="bi bi-trash align-middle"></i> <span class="align-middle">Delete</span>';

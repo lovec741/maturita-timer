@@ -22,27 +22,34 @@ class TimerManager {
 
 class CreateMenu {
     constructor(showTimerCallback) {
-        this.savedTimers = new SavedTimers(showTimerCallback);
+        this.savedTimers = new SavedTimers(showTimerCallback, (savedTimer) => this.fillFormFromSavedTimer(savedTimer));
     }
 
-    addSegment() {
+    addSegment(defaultValues) {
         const segmentsContainer = document.getElementById('segmentsContainer');
         const newSegment = document.createElement('div');
         newSegment.className = 'd-flex align-items-center timer-segment mb-2';
 
         const colorInputs = document.querySelectorAll('#timerMenu .timer-segment [type="color"]');
         const existingHexColors = Array.from(colorInputs).map(inp => inp.value);
-    
+        if (defaultValues == undefined) {
+            defaultValues = {
+                minutes: "",
+                seconds: "",
+                desc: "",
+                color: generateRandomHexColor(existingHexColors)
+            }
+        }
         newSegment.innerHTML = `
             <div class="input-group me-2">
-                <input type="number" name="minutes" min="0" placeholder="0" class="form-control" aria-label="Minutes"/>
+                <input type="number" name="minutes" min="0" placeholder="0" class="form-control" aria-label="Minutes" value="${defaultValues.minutes}"/>
                 <span class="input-group-text">min</span>
-                <input type="number" name="seconds" min="0" max="59" placeholder="00" class="form-control" aria-label="Seconds"/>
+                <input type="number" name="seconds" min="0" max="59" placeholder="00" class="form-control" aria-label="Seconds" value="${defaultValues.seconds}"/>
                 <span class="input-group-text">s</span>
             </div>
-            <input type="text" name="desc" maxlength="12" placeholder="Short Label" class="form-control me-2"/>
+            <input type="text" name="desc" maxlength="12" placeholder="Short Label" class="form-control me-2" value="${defaultValues.desc}"/>
             <div class="color-input-container">
-                <input type="color" class="form-control form-control-color" style="min-width: 2.5em" value="`+generateRandomHexColor(existingHexColors)+`"/>
+                <input type="color" class="form-control form-control-color" style="min-width: 2.5em" value="${defaultValues.color}"/>
             </div>
         `;
         segmentsContainer.appendChild(newSegment);
@@ -79,6 +86,22 @@ class CreateMenu {
 
         this.savedTimers.saveTimers({title, data: timerData})
         this.reset();
+    }
+
+    fillFormFromSavedTimer(savedTimer) {
+        this.reset();
+        document.getElementById('timerTitle').value = savedTimer.title;
+        savedTimer.data.forEach(segment => {
+            var minutes = Math.floor(segment.duration);
+            var seconds = Math.round((segment.duration-minutes) * 60);
+            var defaultValues = {
+                minutes: minutes,
+                seconds: seconds,
+                desc: segment.desc,
+                color: segment.color
+            }
+            this.addSegment(defaultValues)
+        })
     }
         
     reset() {
