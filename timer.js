@@ -24,38 +24,98 @@ class Timer {
             this.updatePauseButton(true);
             this.isRunning = true;
             this.startTime = Date.now();
-            this.update()
-            if (this.timerInterval !== null)
-                accurateInterval.clear(this.timerInterval)
-            // console.log("creating timer")
-            this.timerInterval = accurateInterval.set(() => {this.update()}, 1000);
+            this.redraw();
+            this.restartInterval();
         } else {
             this.updatePauseButton(false);
             this.timerDraw.drawPauseSymbol();
             accurateInterval.clear(this.timerInterval);
             this.isRunning = false;
-            const currentSegment = this.segments[this.currentSegmentIndex];
-            if (currentSegment != undefined && currentSegment.elapsed !== 0) { // prevents second skip on pause
-                currentSegment.elapsed--;
-            }
         }
+    }
+
+    restartInterval() {
+        if (this.timerInterval !== null)
+            accurateInterval.clear(this.timerInterval)
+        this.timerInterval = accurateInterval.set(() => {this.update()}, 1000);
     }
 
     update() {
         if (!this.isRunning) return;
         // console.log("TIMER DEBUG", Date.now() - this.startTime)
         if (this.currentSegmentIndex >= this.segments.length) {
-            this.reset();
-            this.finishedModal.show();
+            this.reachedEnd();
             return;
         }
 
         const currentSegment = this.segments[this.currentSegmentIndex];
-        this.redraw();
         currentSegment.elapsed++;
         if (currentSegment.elapsed >= currentSegment.duration) {
             this.currentSegmentIndex++;
         }
+        this.redraw();
+    }
+
+    reachedEnd() {
+        this.reset();
+        this.finishedModal.show();
+    }
+
+    offset(seconds) {
+        this.restartInterval();
+        let currentSegment = this.segments[this.currentSegmentIndex];
+        if (seconds > 0) {
+            while (currentSegment.duration - currentSegment.elapsed <= seconds) {
+                this.currentSegmentIndex++;
+                seconds -= currentSegment.duration - currentSegment.elapsed;
+                currentSegment = this.segments[this.currentSegmentIndex];
+                if (this.currentSegmentIndex >= this.segments.length) {
+                    this.reachedEnd();
+                    return;
+                }
+                currentSegment.elapsed = 0;
+            }
+            currentSegment.elapsed += seconds;
+        } else {
+            while (currentSegment.elapsed < -seconds) {
+                this.currentSegmentIndex--;
+                seconds += currentSegment.elapsed;
+                if (this.currentSegmentIndex < 0) break;
+                currentSegment = this.segments[this.currentSegmentIndex];
+                currentSegment.elapsed = currentSegment.duration;
+            }
+            if (this.currentSegmentIndex < 0) {
+                currentSegment = this.segments[0];
+                currentSegment.elapsed = 0;
+                this.currentSegmentIndex = 0;
+            } else {
+                currentSegment.elapsed += seconds;
+            }
+        }
+        
+        this.redraw();
+        if (!this.isRunning) {this.timerDraw.drawPauseSymbol();}
+    }
+
+    offsetSegment(next) {
+        this.restartInterval();
+        if (!next && this.segments[this.currentSegmentIndex].elapsed != 0) { // gives user 1s to click the previous button again 
+            this.segments[this.currentSegmentIndex].elapsed = 0;
+        } else {
+            this.currentSegmentIndex += next ? 1 : -1;
+            if (this.currentSegmentIndex < 0) {
+                this.currentSegmentIndex = 0;
+            }
+            let currentSegment = this.segments[this.currentSegmentIndex];
+            if (this.currentSegmentIndex >= this.segments.length) {
+                this.reachedEnd();
+                return;
+            }
+            currentSegment.elapsed = 0;
+    
+        }
+        this.redraw();
+        if (!this.isRunning) {this.timerDraw.drawPauseSymbol();}
     }
 
     updateDigitalTimerDisplay() {
@@ -75,11 +135,11 @@ class Timer {
 
     updatePauseButton(running) {
         if (!running) {
-            this.pauseButton.innerHTML = '<i class="bi bi-caret-right-fill"></i>  Start'
+            this.pauseButton.innerHTML = '<i class="bi bi-caret-right-fill align-middle"></i> <span class="align-middle">Start</span>'
             this.pauseButton.classList.remove("btn-warning")
             this.pauseButton.classList.add("btn-success")
         } else {
-            this.pauseButton.innerHTML = '<i class="bi bi-pause-fill"></i>  Pause'
+            this.pauseButton.innerHTML = '<i class="bi bi-pause-fill align-middle"></i> <span class="align-middle">Pause</span>'
             this.pauseButton.classList.remove("btn-success")
             this.pauseButton.classList.add("btn-warning")
         }
@@ -301,7 +361,7 @@ class SavedTimers {
     
                 const deleteButton = document.createElement('button');
                 deleteButton.className = 'btn btn-danger';
-                deleteButton.innerHTML = '<i class="bi bi-trash"></i> Delete';
+                deleteButton.innerHTML = '<i class="bi bi-trash align-middle"></i> <span class="align-middle">Delete</span>';
                 deleteButton.onclick = (() => {
                     this.deleteTimer(index);
                 }).bind(this);
