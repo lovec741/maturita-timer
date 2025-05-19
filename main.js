@@ -48,9 +48,20 @@ class CreateMenu {
                 <span class="input-group-text">s</span>
             </div>
             <input type="text" name="desc" maxlength="12" placeholder="Short Label" class="form-control me-2" value="${defaultValues.desc}"/>
-            <div class="color-input-container">
+            <div class="color-input-container me-2">
                 <input type="color" class="form-control form-control-color" style="min-width: 2.5em" value="${defaultValues.color}"/>
             </div>
+            <div class="d-flex flex-column me-2">
+                <button class="btn btn-sm btn-secondary move-segment-button mb-1" type="button" title="Move Up" onclick="this.closest('.timer-segment').previousElementSibling && this.closest('.timer-segment').parentNode.insertBefore(this.closest('.timer-segment'), this.closest('.timer-segment').previousElementSibling)">
+                    <i class="bi bi-arrow-up"></i>
+                </button>
+                <button class="btn btn-sm btn-secondary move-segment-button" type="button" title="Move Down" onclick="this.closest('.timer-segment').nextElementSibling && this.closest('.timer-segment').parentNode.insertBefore(this.closest('.timer-segment').nextElementSibling, this.closest('.timer-segment'))">
+                    <i class="bi bi-arrow-down"></i>
+                </button>
+            </div>
+            <button class="btn btn-danger delete-segment-btn" type="button" title="Delete Segment" onclick="this.closest('.timer-segment').remove()">
+                <i class="bi bi-trash"></i>
+            </button>
         `;
         segmentsContainer.appendChild(newSegment);
     }
