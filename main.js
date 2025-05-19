@@ -89,7 +89,8 @@ class CreateMenu {
     }
 
     fillFormFromSavedTimer(savedTimer) {
-        this.reset();
+        const segmentsContainer = document.getElementById('segmentsContainer');
+        segmentsContainer.innerHTML = '';
         document.getElementById('timerTitle').value = savedTimer.title;
         savedTimer.data.forEach(segment => {
             var minutes = Math.floor(segment.duration);
