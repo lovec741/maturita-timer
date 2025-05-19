@@ -378,7 +378,9 @@ class SavedTimers {
                 deleteButton.className = 'btn btn-danger';
                 deleteButton.innerHTML = '<i class="bi bi-trash align-middle"></i> <span class="align-middle">Delete</span>';
                 deleteButton.onclick = (() => {
-                    this.deleteTimer(index);
+                    if (confirm(`Are you sure you want to delete "${timer.title}"?`)) {
+                        this.deleteTimer(index);
+                    }
                 }).bind(this);
                 timerContainer.appendChild(deleteButton);
     
