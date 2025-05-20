@@ -25,7 +25,7 @@
             --bs-btn-disabled-border-color: #285495;
         }
         body {
-            background-color: #285495; /*#92D293;*/
+            background-color: #4089f8; /*#92D293;*/
         }
         .timer-menu-container {
             max-width: 700px;
@@ -81,11 +81,11 @@
     <script src="main.js"></script>
 </head>
 <body>
-    <div class="text-center mt-3">
-        <img src="gymrce-logo.svg" alt="GymRCE Logo" height="60" class="bg-white rounded p-3">
+    <div class="text-center mt-4">
+        <img src="gymrce-logo.svg" alt="Gymnázium Roudnice Logo" height="60" class="bg-white rounded pt-2 px-4 pb-3">
     </div>
     <div id="timerMenu">
-        <div class="timer-menu-container bg-dark border border-3 border-light rounded my-5 p-4">
+        <div class="timer-menu-container bg-dark border border-3 border-light rounded mb-4 mt-4 p-4">
             <div class="mb-3">
                 <h2 class="text-white">Create Timer</h2>
                 <div class="mb-3">
@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between mt-4">
-                <button onclick="timerManager.createMenu.addSegment()" class="btn btn-light">
+                <button onclick="timerManager.createMenu.addSegment()" class="btn btn-primary">
                     <i class="bi bi-plus align-middle"></i> <span class="align-middle">Add Segment</span>
                 </button>
                 <button onclick="timerManager.createMenu.createTimer()" class="btn btn-success">
@@ -105,7 +105,7 @@
                 </button>
             </div>
         </div>
-        <div class="timer-menu-container bg-dark border border-3 border-light rounded my-5 p-4">
+        <div class="timer-menu-container bg-dark border border-3 border-light rounded mt-4 p-4">
             <h2 class="mb-3 text-white">My Timers</h2>
             <div id="savedTimers" class="d-grid gap-2">
 
@@ -126,7 +126,7 @@
 
 
     <div id="timerDisplay"  style="display: none;">
-        <div class="container mt-4 mb-3">
+        <div class="container mt-3" id="timer-clock">
             <div class="row justify-content-center">
                 <div class="col-auto">
                     <div id="timerClock" class="display-2 fw-semibold text-center text-black">0:00</div>
@@ -134,40 +134,42 @@
             </div>
         </div>
 
-        <div onclick="timerManager.timer.toggle()" class="flex-grow-1 d-flex justify-content-center align-items-center" style="height: 67vh">
-            <canvas id="pieChart" width="1000" height="1000" style="width: min(67vh, 67vw); height: min(67vh, 67vw)"></canvas>
+
+        <div onclick="timerManager.timer.toggle()" class="flex-grow-1 d-flex justify-content-center align-items-center" id="pie-chart-cont">
+            <canvas id="pieChart" width="1000" height="1000"></canvas>
         </div>
 
-        <div class="container mb-3 fixed-bottom">
+
+        <div class="container mb-3 fixed-bottom" id="controls">
             <div class="row justify-content-center d-flex d-md-none mb-3">
                 <div class="col-auto">
-                    <button onclick="timerManager.timer.offsetSegment(false)" class="btn btn-secondary me-2">
+                    <button onclick="timerManager.timer.offsetSegment(false)" class="btn btn-primary me-2">
                         <i class="bi bi-skip-backward align-middle"></i> <span class="align-middle">Previous</span>
                     </button>
-                    <button onclick="timerManager.timer.offsetSegment(true)" class="btn btn-secondary">
+                    <button onclick="timerManager.timer.offsetSegment(true)" class="btn btn-primary">
                         <span class="align-middle">Next</span> <i class="bi bi-skip-forward align-middle"></i>
                     </button>
                 </div>
             </div>
             <div class="row justify-content-center">
                 <div class="col-auto mb-3">
-                    <button onclick="timerManager.timer.offsetSegment(false)" class="btn btn-secondary me-2 d-md-inline d-none">
+                    <button onclick="timerManager.timer.offsetSegment(false)" class="btn btn-primary me-2 d-md-inline d-none">
                         <i class="bi bi-skip-backward align-middle"></i> <span class="align-middle">Previous</span>
                     </button>
 
-                    <button onclick="timerManager.timer.offset(-30)" class="btn btn-secondary me-2">
+                    <button onclick="timerManager.timer.offset(-30)" class="btn btn-primary me-2">
                         <i class="bi bi-rewind align-middle"></i> <span class="align-middle">30s</span>
                     </button>
-                    <button onclick="timerManager.timer.offset(-15)" class="btn btn-secondary me-2">
+                    <button onclick="timerManager.timer.offset(-15)" class="btn btn-primary me-2">
                         <i class="bi bi-rewind align-middle"></i> <span class="align-middle">15s</span>
                     </button>
-                    <button onclick="timerManager.timer.offset(15)" class="btn btn-secondary me-2">
+                    <button onclick="timerManager.timer.offset(15)" class="btn btn-primary me-2">
                         <span class="align-middle">15s</span> <i class="bi bi-fast-forward align-middle"></i>
                     </button>
-                    <button onclick="timerManager.timer.offset(30)" class="btn btn-secondary me-md-2">
+                    <button onclick="timerManager.timer.offset(30)" class="btn btn-primary me-md-2">
                         <span class="align-middle">30s</span> <i class="bi bi-fast-forward align-middle"></i>
                     </button>
-                    <button onclick="timerManager.timer.offsetSegment(true)" class="btn btn-secondary d-md-inline d-none">
+                    <button onclick="timerManager.timer.offsetSegment(true)" class="btn btn-primary d-md-inline d-none">
                         <span class="align-middle">Next</span> <i class="bi bi-skip-forward align-middle"></i>
                     </button>
                 </div>

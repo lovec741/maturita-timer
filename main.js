@@ -10,6 +10,7 @@ class TimerManager {
         this.timer = new Timer(segments);
         document.getElementById('timerMenu').style.display = 'none';
         document.getElementById('timerDisplay').style.display = 'block';
+        updatePieChartSize();
     }
     
     showMenu() {
@@ -183,6 +184,31 @@ function generateRandomHexColor(existingHexColors) {
 
     return '#'+colorconv.HSL2HEX([selectedHue, random(60, 100), random(50, 60)]);
 }
+
+function updatePieChartSize() {
+    const pieChartCont = document.getElementById('pieChart');
+    const controls = document.getElementById('controls');
+    const timerClock = document.getElementById('timer-clock');
+
+    if (pieChartCont && controls && timerClock) {
+        const controlsHeight = window.innerHeight - controls.getBoundingClientRect().top;
+        const timerClockBottom = timerClock.getBoundingClientRect().bottom;
+        const availableHeight = window.innerHeight - controlsHeight - timerClockBottom - 20;
+        console.log('Available height calculation:', {
+            windowHeight: window.innerHeight,
+            controlsHeight: controlsHeight,
+            timerClockBottom: timerClockBottom,
+            availableHeight: availableHeight
+        });
+        
+        const size = Math.max(availableHeight, 0) + 'px';
+        pieChartCont.style.width = size;
+        pieChartCont.style.height = size;
+    }
+}
+
+window.addEventListener('resize', updatePieChartSize);
+
 
 var noSleep = new NoSleep();
 let timerManager = new TimerManager();
