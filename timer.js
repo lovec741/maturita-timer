@@ -275,7 +275,7 @@ class TimerDraw {
         startAngle = 0;
         elapsedSegmentRatios.forEach((ratio, index) => {
             const endAngle = startAngle + 2 * Math.PI * ratio;
-            this.drawPieSegment(startAngle, endAngle, "#fff", null, 0.9);
+            this.drawPieSegment(startAngle, endAngle, "#fff", null, 0.95);
             if (index == currentSegmentIndex) {
                 currentAnglesElapsed = [startAngle, endAngle];
             }
