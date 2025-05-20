@@ -9,8 +9,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
     <style>
+        :root {
+            --bs-primary: #285495;
+            --bs-primary-rgb: 40, 84, 149;
+        }
+
+        .btn-primary {
+            --bs-btn-bg: #285495;
+            --bs-btn-border-color: #285495;
+            --bs-btn-hover-bg: #214679;
+            --bs-btn-hover-border-color: #1f4272;
+            --bs-btn-active-bg: #1f4272;
+            --bs-btn-active-border-color: #1d3d6b;
+            --bs-btn-disabled-bg: #285495;
+            --bs-btn-disabled-border-color: #285495;
+        }
         body {
-            background-color: #92D293;
+            background-color: #285495; /*#92D293;*/
         }
         .timer-menu-container {
             max-width: 700px;
@@ -66,6 +81,9 @@
     <script src="main.js"></script>
 </head>
 <body>
+    <div class="text-center mt-3">
+        <img src="gymrce-logo.svg" alt="GymRCE Logo" height="60" class="bg-white rounded p-3">
+    </div>
     <div id="timerMenu">
         <div class="timer-menu-container bg-dark border border-3 border-light rounded my-5 p-4">
             <div class="mb-3">
@@ -108,7 +126,7 @@
 
 
     <div id="timerDisplay"  style="display: none;">
-        <div class="container mt-4">
+        <div class="container mt-4 mb-3">
             <div class="row justify-content-center">
                 <div class="col-auto">
                     <div id="timerClock" class="display-2 fw-semibold text-center text-black">0:00</div>
@@ -116,8 +134,8 @@
             </div>
         </div>
 
-        <div onclick="timerManager.timer.toggle()" class="flex-grow-1 d-flex justify-content-center align-items-center" style="height: 74vh">
-            <canvas id="pieChart" width="1000" height="1000" style="width: min(70vh, 70vw); height: min(70vh, 70vw)"></canvas>
+        <div onclick="timerManager.timer.toggle()" class="flex-grow-1 d-flex justify-content-center align-items-center" style="height: 67vh">
+            <canvas id="pieChart" width="1000" height="1000" style="width: min(67vh, 67vw); height: min(67vh, 67vw)"></canvas>
         </div>
 
         <div class="container mb-3 fixed-bottom">
