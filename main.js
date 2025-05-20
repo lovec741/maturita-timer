@@ -186,7 +186,8 @@ function generateRandomHexColor(existingHexColors) {
 }
 
 function updatePieChartSize() {
-    const pieChartCont = document.getElementById('pieChart');
+    const pieChart = document.getElementById('pieChart');
+    const pieChartCont = document.getElementById('pie-chart-cont');
     const controls = document.getElementById('controls');
     const timerClock = document.getElementById('timer-clock');
 
@@ -194,16 +195,11 @@ function updatePieChartSize() {
         const controlsHeight = window.innerHeight - controls.getBoundingClientRect().top;
         const timerClockBottom = timerClock.getBoundingClientRect().bottom;
         const availableHeight = window.innerHeight - controlsHeight - timerClockBottom - 20;
-        console.log('Available height calculation:', {
-            windowHeight: window.innerHeight,
-            controlsHeight: controlsHeight,
-            timerClockBottom: timerClockBottom,
-            availableHeight: availableHeight
-        });
-        
-        const size = Math.max(availableHeight, 0) + 'px';
-        pieChartCont.style.width = size;
-        pieChartCont.style.height = size;
+        pieChartCont.style.width = "100%";
+        pieChartCont.style.height = availableHeight+'px';
+        const size = Math.min(availableHeight, window.innerWidth - 20) + 'px';
+        pieChart.style.width = size;
+        pieChart.style.height = size;
     }
 }
 
