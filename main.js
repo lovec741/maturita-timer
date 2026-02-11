@@ -74,8 +74,11 @@ class CreateMenu {
             const durationMinutesValue = segment.querySelector('[name="minutes"]').value;
             var durationSecondsValue = segment.querySelector('[name="seconds"]').value;
             const descValue = segment.querySelector('[name="desc"]').value;
-            if (!durationMinutesValue) {
+            if (!durationMinutesValue && !durationSecondsValue) {
                 return;
+            }
+            if (!durationMinutesValue) {
+                durationMinutesValue = 0;
             }
             if (!durationSecondsValue) {
                 durationSecondsValue = 0;
