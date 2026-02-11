@@ -71,7 +71,7 @@ class CreateMenu {
         const segments = document.querySelectorAll('.timer-segment');
         const timerData = [];
         segments.forEach(segment => {
-            const durationMinutesValue = segment.querySelector('[name="minutes"]').value;
+            var durationMinutesValue = segment.querySelector('[name="minutes"]').value;
             var durationSecondsValue = segment.querySelector('[name="seconds"]').value;
             const descValue = segment.querySelector('[name="desc"]').value;
             if (!durationMinutesValue && !durationSecondsValue) {
